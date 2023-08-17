@@ -55,6 +55,7 @@
                     });
 
                     const result = await client.put(`/user/2023-06-31/${fileName}`, file);
+                    await client.putACL(`/user/2023-06-31/${fileName}`, 'public-read');
                     console.log(result);
                     const imageUrl = result.url;
                     var imageElement = document.createElement('img');
