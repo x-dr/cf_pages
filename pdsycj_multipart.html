@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>上传</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="row justify-content-center mt-5">
+            <div class="col-6">
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <div class="text-center">
+                            <label for="fileInput" class="form-label">选择文件</label>
+                        </div>
+                        <input type="file" id="fileInput" name="file" class="form-control">
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">上传</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-3">
+        <div id="imageContainer"></div>
+        <div id="imageLink" class="mt-3"></div>
+        <button id="copyButton" class="btn btn-secondary mt-2" onclick="copyImageUrl()">复制链接</button>
+    </div>
+
+    <script src="https://gosspublic.alicdn.com/aliyun-oss-sdk-6.16.0.min.js"></script>
+    <script>
+
+        const options = {
+            // 获取分片上传进度、断点和返回值。
+            progress: (p, cpt, res) => {
+                console.log(p);
+            },
+            // 设置并发上传的分片数量。
+            parallel: 4,
+            // 设置分片大小。默认值为1 MB，最小值为100 KB。
+            partSize: 1024 * 1024,
+            // headers,
+            // 自定义元数据，通过HeadObject接口可以获取Object的元数据。
+            // meta: { year: 2023, people: "dd" },
+            'x-oss-object-acl': 'public-read-write',
+            mime: "text/plain",
+        };
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var uploadForm = document.getElementById('uploadForm');
+            uploadForm.addEventListener('submit', async (e) => {
+                e.preventDefault(); // 阻止表单提交
+                var fileInput = document.getElementById('fileInput');
+                var file = fileInput.files[0]; // 获取用户选择的文件
+                const fileName = file.name;
+
+                try {
+                    const res = await fetch('/getsign');
+                    const ossParams = await res.json();
+
+                    const client = new OSS({
+                        region: 'oss-cn-hongkong',
+                        accessKeyId: ossParams.data.tempAk,
+                        accessKeySecret: ossParams.data.tempSk,
+                        stsToken: ossParams.data.token,
+                        bucket: 'xlt-object'
+                    });
+
+                    // const result = await client.put(`/user/2023-06-31/${fileName}`, file);
+                    // await client.putACL(`/user/2023-06-31/${fileName}`, 'public-read');
+                    // console.log(result);
+                    // const imageUrl = result.url;
+                    const result = await client.multipartUpload(`/user/2023-08-17/${fileName}`, file, {
+                        ...options,
+                    });
+                    // console.log(res)
+
+                    await client.putACL(`/user/2023-08-17/${fileName}`, 'public-read');
+                    console.log(result);
+                    // console.log(result.name);
+                    const imageUrl = `http://xlt-object.oss-cn-hongkong.aliyuncs.com${result.name}`
+                    var imageElement = document.createElement('img');
+                    imageElement.src = imageUrl;
+                    imageElement.alt = '已上传的图像';
+                    var imageContainer = document.getElementById('imageContainer');
+                    imageContainer.innerHTML = ''; // 清除之前的内容
+                    imageContainer.appendChild(imageElement);
+
+                    var imageLink = document.getElementById('imageLink');
+                    imageLink.innerHTML = 'url：<a href="' + imageUrl + '" target="_blank">' + imageUrl + '</a>';
+
+                    alert("文件上传成功！");
+                } catch (e) {
+                    console.error(e);
+                    alert("文件上传失败！");
+                }
+            });
+        });
+
+        function copyImageUrl() {
+            var imageUrl = document.getElementById('imageLink').querySelector('a').getAttribute('href');
+            var dummy = document.createElement('textarea');
+            document.body.appendChild(dummy);
+            dummy.value = imageUrl;
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+            alert('链接已复制！');
+        }
+    </script>
+</body>
+
+</html>
