@@ -9,6 +9,10 @@
 
 <body>
     <div class="container">
+        <div id="progressContainer">
+            <div id="progressBar" class="progress-bar" role="progressbar"></div>
+        </div>
+
         <div class="row justify-content-center mt-5">
             <div class="col-6">
                 <form id="uploadForm" enctype="multipart/form-data">
@@ -34,6 +38,26 @@
 
     <script src="https://gosspublic.alicdn.com/aliyun-oss-sdk-6.16.0.min.js"></script>
     <script>
+
+        const options = {
+            // 获取分片上传进度、断点和返回值。
+            progress: (p, cpt, res) => {
+                console.log(p);
+                const progressBar = document.getElementById('progressBar');
+                progressBar.style.width = `${Math.floor(p * 100)}%`;
+                progressBar.textContent = `${Math.floor(p * 100)}%`;
+            },
+            // 设置并发上传的分片数量。
+            parallel: 4,
+            // 设置分片大小。默认值为1 MB，最小值为100 KB。
+            partSize: 1024 * 1024,
+            // headers,
+            // 自定义元数据，通过HeadObject接口可以获取Object的元数据。
+            // meta: { year: 2023, people: "dd" },
+            'x-oss-object-acl': 'public-read-write',
+            mime: "text/plain",
+        };
+
         document.addEventListener('DOMContentLoaded', function () {
             var uploadForm = document.getElementById('uploadForm');
             uploadForm.addEventListener('submit', async (e) => {
@@ -54,10 +78,21 @@
                         bucket: 'xlt-object'
                     });
 
-                    const result = await client.put(`/user/2023-06-31/${fileName}`, file);
-                    await client.putACL(`/user/2023-06-31/${fileName}`, 'public-read');
+                    // const result = await client.put(`/user/2023-06-31/${fileName}`, file);
+                    // await client.putACL(`/user/2023-06-31/${fileName}`, 'public-read');
+                    // console.log(result);
+                    // const imageUrl = result.url;
+                    const newfileName = fileName.replace(/[^\w\d\-._]/gi, '');
+
+                    const result = await client.multipartUpload(`/user/2023-06-31/${newfileName}`, file, {
+                        ...options,
+                    });
+                    // console.log(res)
+
+                    await client.putACL(`/user/2023-06-31/${newfileName}`, 'public-read');
                     console.log(result);
-                    const imageUrl = result.url;
+                    // console.log(result.name);
+                    const imageUrl = `http://xlt-object.oss-cn-hongkong.aliyuncs.com${result.name}`
                     var imageElement = document.createElement('img');
                     imageElement.src = imageUrl;
                     imageElement.alt = '已上传的图像';
