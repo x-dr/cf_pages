@@ -89,9 +89,9 @@
                         ...options,
                     });
                     // console.log(res)
-
+console.log(result);
                     await client.putACL(`/user/2023-06-28/${newfileName}`, 'public-read');
-                    console.log(result);
+                    // console.log(result);
                     // console.log(result.name);
                     const imageUrl = `http://xlt-object.oss-cn-hongkong.aliyuncs.com${result.name}`
                     var imageElement = document.createElement('img');
