@@ -9,11 +9,11 @@
 
 <body>
     <div class="container">
-<div id="progressContainer">
-  <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0;"></div>
-</div>
-
         <div class="row justify-content-center mt-5">
+            <div id="progressContainer">
+                <div id="progressBar" class="progress-bar bg-primary" role="progressbar" style="width: 0;"></div>
+            </div>
+
             <div class="col-6">
                 <form id="uploadForm" enctype="multipart/form-data">
                     <div class="mb-3">
@@ -43,10 +43,19 @@
             // 获取分片上传进度、断点和返回值。
             progress: (p, cpt, res) => {
                 console.log(p);
-        const progressBar = document.getElementById('progressBar');
-        progressBar.style.width = `${Math.floor(p * 100)}%`;
-        progressBar.setAttribute("aria-valuenow", Math.floor(p * 100));
-        progressBar.textContent = `${Math.floor(p * 100)}%`;
+                const progressBar = document.getElementById('progressBar');
+                progressBar.style.width = `${Math.floor(p * 100)}%`;
+                progressBar.setAttribute("aria-valuenow", Math.floor(p * 100));
+                progressBar.textContent = `${Math.floor(p * 100)}%`;
+
+                // 根据进度设置不同的颜色类
+                if (p < 0.5) {
+                    progressBar.classList.remove("bg-success");
+                    progressBar.classList.add("bg-primary");
+                } else {
+                    progressBar.classList.remove("bg-primary");
+                    progressBar.classList.add("bg-success");
+                }
             },
             // 设置并发上传的分片数量。
             parallel: 4,
