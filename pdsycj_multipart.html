@@ -75,12 +75,14 @@
                     // await client.putACL(`/user/2023-06-31/${fileName}`, 'public-read');
                     // console.log(result);
                     // const imageUrl = result.url;
-                    const result = await client.multipartUpload(`/user/2023-08-17/${fileName}`, file, {
+                    const newfileName = fileName.replace(/[^\w\d\-._]/gi, '');
+
+                    const result = await client.multipartUpload(`/user/2023-08-17/${newfileName}`, file, {
                         ...options,
                     });
                     // console.log(res)
 
-                    await client.putACL(`/user/2023-08-17/${fileName}`, 'public-read');
+                    await client.putACL(`/user/2023-08-17/${newfileName}`, 'public-read');
                     console.log(result);
                     // console.log(result.name);
                     const imageUrl = `http://xlt-object.oss-cn-hongkong.aliyuncs.com${result.name}`
