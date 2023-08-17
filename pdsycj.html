@@ -9,9 +9,9 @@
 
 <body>
     <div class="container">
-        <div id="progressContainer">
-            <div id="progressBar" class="progress-bar" role="progressbar"></div>
-        </div>
+<div id="progressContainer">
+  <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0;"></div>
+</div>
 
         <div class="row justify-content-center mt-5">
             <div class="col-6">
@@ -43,9 +43,10 @@
             // 获取分片上传进度、断点和返回值。
             progress: (p, cpt, res) => {
                 console.log(p);
-                const progressBar = document.getElementById('progressBar');
-                progressBar.style.width = `${Math.floor(p * 100)}%`;
-                progressBar.textContent = `${Math.floor(p * 100)}%`;
+        const progressBar = document.getElementById('progressBar');
+        progressBar.style.width = `${Math.floor(p * 100)}%`;
+        progressBar.setAttribute("aria-valuenow", Math.floor(p * 100));
+        progressBar.textContent = `${Math.floor(p * 100)}%`;
             },
             // 设置并发上传的分片数量。
             parallel: 4,
