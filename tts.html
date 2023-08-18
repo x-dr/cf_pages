@@ -61,6 +61,7 @@
         <label for="ssmlInput">SSML 文本：</label>
         <textarea id="ssmlInput" rows="4" cols="50"></textarea>
         <button onclick="playAudio()">播放音频</button>
+        <button onclick="downloadAudio()">下载音频</button>
     </div>
     <audio id="audioPlayer" controls></audio>
 
@@ -127,6 +128,27 @@
                         console.log(error));
             };
             audioPlayer.play();
+        }
+
+
+                function downloadAudio() {
+            const voice = document.getElementById("voiceSelect").value;
+            const voiceStyle = document.getElementById("voiceStyleSelect").value;
+            const rate = document.getElementById("rateRange").value;
+            const pitch = document.getElementById("pitchRange").value;
+            const text = document.getElementById("ssmlInput").value;
+
+            const url = `/audio?voice=${encodeURIComponent(voice)}&voiceStyle=${encodeURIComponent(voiceStyle)}&rate=${encodeURIComponent(rate)}&pitch=${encodeURIComponent(pitch)}&text=${encodeURIComponent(text)}`;
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'audio.mp3';
+            link.style.display = 'none';
+
+            document.body.appendChild(link);
+
+            link.click();
+            document.body.removeChild(link);
         }
     </script>
 </body>
