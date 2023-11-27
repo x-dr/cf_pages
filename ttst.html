@@ -220,8 +220,10 @@
         function legado() {
             const voice = document.getElementById("voiceSelect").value;
             const voiceStyle = document.getElementById("voiceStyleSelect").value;
+            const rate = document.getElementById("rateRange").value;
             const pitch = document.getElementById("pitchRange").value;
-            const domain = window.location.origin;
+            const text = document.getElementById("ssmlInput").value;
+            const audioPlayer = document.getElementById("audioPlayer");
             const url = `/legado?voice=${encodeURIComponent(voice)}&voiceStyle=${encodeURIComponent(voiceStyle)}&rate=${encodeURIComponent(rate)}&pitch=${encodeURIComponent(pitch)}&text=${encodeURIComponent(text)}`;
             importUrl = "legado://import/httpTTS?src=" + encodeURIComponent(window.location.origin + url);
             // 打开importUrl
