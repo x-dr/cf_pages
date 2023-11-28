@@ -268,6 +268,7 @@
             const voiceStyle = document.getElementById("voiceStyleSelect").value;
             const rate = document.getElementById("rateRange").value;
             const pitch = document.getElementById("pitchRange").value;
+            const text = document.getElementById("ssmlInput").value;
             const url = `/sourceReader?voice=${encodeURIComponent(voice)}&voiceStyle=${encodeURIComponent(voiceStyle)}&rate=${encodeURIComponent(rate)}&pitch=${encodeURIComponent(pitch)}&text=${encodeURIComponent(text)}`;            
             navigator.clipboard.writeText(window.location.origin + url).then(function () {
                 alert('复制成功！');
